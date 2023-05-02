@@ -37,7 +37,7 @@ GAMEPLAY:
     - Your objective is to punch your opponent first
     - You have a cooldown between each punch
     - You can jump and stand on all the blocks
-    - You need a lead of at least 2 points to win
+    - First to 3 wins
 
 CUSTOM MAPS:
 
