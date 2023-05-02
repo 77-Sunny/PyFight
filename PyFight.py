@@ -101,10 +101,9 @@ global Round
 Round = 1
 
 font = pygame.font.SysFont("arialblack", 40)
-def text(txt, font, txt_col, x, y):
+def text(txt, font, txt_col):
     img = font.render(txt, True, txt_col)
-    def draw():
-        win.blit(img, (x, y))
+    return img
 
 def reset(rund):
 
@@ -115,179 +114,208 @@ def reset(rund):
     rund += 1; 
     return rund
 
+global running
+running = False
+
 # Main game loop
-running = True
-while running:
+def main():
+    running = True
+    while running:
 
-    p1_box.x = p1.x
-    p1_box.y = p1.y
-    p2_box.x = p2.x
-    p2_box.y = p2.y
+        p1_box.x = p1.x
+        p1_box.y = p1.y
+        p2_box.x = p2.x
+        p2_box.y = p2.y
 
-    if p1.special > 0: p1.special -= 1
-    if p2.special > 0: p2.special -= 1
+        if p1.special > 0: p1.special -= 1
+        if p2.special > 0: p2.special -= 1
 
-    p1_p_msg = f'P1 Points: {p1_points}'
-    p2_p_msg = f'P2 Points: {p2_points}'
+        p1_p_msg = f'P1 Points: {p1_points}'
+        p2_p_msg = f'P2 Points: {p2_points}'
 
-    text(p1_p_msg, font, (0, 0, 0), 25, 25).draw()
-    text(p2_p_msg, font, (0, 0, 0), 625, 25).draw()
+        text(p1_p_msg, font, (0, 0, 0), 25, 25).draw()
+        text(p2_p_msg, font, (0, 0, 0), 625, 25).draw()
 
-    pygame.display.set_caption(f'PyFight v_a.075 | dt = {dt * 1000} | p1p = {p1_points} | p2p = {p2_points}')
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+        pygame.display.set_caption(f'PyFight v_a.075 | dt = {dt * 1000} | p1p = {p1_points} | p2p = {p2_points}')
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-    keys = pygame.key.get_pressed()
+        keys = pygame.key.get_pressed()
 
-    if keys[pygame.K_ESCAPE]:
-        pygame.quit()
+        if keys[pygame.K_ESCAPE]:
+            pygame.quit()
 
-    # Player 1 movement and collision
-    if keys[pygame.K_a]: 
-        rdir="l"
-        p1_flip = pygame.transform.flip(p1.texture, flip_x=True, flip_y=False)   
-        p1.x -= p1.vel
-    if p1.x < L_BOUND:
-        p1.x = L_BOUND
-    if keys[pygame.K_d]:
-        rdir="r"
-        p1.x += p1.vel
-    if p1.x > R_BOUND:
-        p1.x = R_BOUND
-    if keys[pygame.K_w]:
-        jump = True
-    if keys[pygame.K_s]:
-        p1.y += p1.vel
-    if p1.y > B_BOUND:
-        p1.y = B_BOUND
-    if keys[pygame.K_q]:
-        pos = (p1.x, p1.y)
-        p1_kill = p1.fire(p2_box, rdir, ldir, pos, p1.special)
-        if p1_kill: p2_dead = True
+        # Player 1 movement and collision
+        if keys[pygame.K_a]: 
+            rdir="l"
+            p1_flip = pygame.transform.flip(p1.texture, flip_x=True, flip_y=False)   
+            p1.x -= p1.vel
+        if p1.x < L_BOUND:
+            p1.x = L_BOUND
+        if keys[pygame.K_d]:
+            rdir="r"
+            p1.x += p1.vel
+        if p1.x > R_BOUND:
+            p1.x = R_BOUND
+        if keys[pygame.K_w]:
+            jump = True
+        if keys[pygame.K_s]:
+            p1.y += p1.vel
+        if p1.y > B_BOUND:
+            p1.y = B_BOUND
+        if keys[pygame.K_q]:
+            pos = (p1.x, p1.y)
+            p1_kill = p1.fire(p2_box, rdir, ldir, pos, p1.special)
+            if p1_kill: p2_dead = True
 
-    # Player one jumping
-    if jump:
-        p1.y -= p1_y_vel
-        p1_y_vel -= grav
-        if p1_y_vel < -p1.j_height:
-            jump=False
-            p1_y_vel = p1.j_height
-    else:
-        p1.y += grav * p1.vel
+        # Player one jumping
+        if jump:
+            p1.y -= p1_y_vel
+            p1_y_vel -= grav
+            if p1_y_vel < -p1.j_height:
+                jump=False
+                p1_y_vel = p1.j_height
+        else:
+            p1.y += grav * p1.vel
 
-    # Player 2 movement and collision
-    if keys[pygame.K_LEFT]:
-        ldir="l"
-        p2_flip = pygame.transform.flip(p2.texture, flip_x=True, flip_y=False)
-        p2.x -= p2.vel
-    if p2.x < L_BOUND:
-        p2.x = L_BOUND
-    if keys[pygame.K_RIGHT]:
-        ldir="r"
-        p2.x += p2.vel
-    if p2.x > R_BOUND:
-        p2.x = R_BOUND
-    if keys[pygame.K_UP]:
-        jumpy=True
-    if p2.y < T_BOUND:
-        p2.y = T_BOUND
-    if keys[pygame.K_DOWN]:
-        p2.y += p2.vel
-    if p2.y > B_BOUND:
-        p2.y = B_BOUND
-    if keys[pygame.K_RCTRL]:
-        pos = (p2.x, p2.y)
-        p2_kill = p2.fire(p1_box, ldir, rdir, pos, p2.special)
-        if p2_kill: p1_dead = True
+        # Player 2 movement and collision
+        if keys[pygame.K_LEFT]:
+            ldir="l"
+            p2_flip = pygame.transform.flip(p2.texture, flip_x=True, flip_y=False)
+            p2.x -= p2.vel
+        if p2.x < L_BOUND:
+            p2.x = L_BOUND
+        if keys[pygame.K_RIGHT]:
+            ldir="r"
+            p2.x += p2.vel
+        if p2.x > R_BOUND:
+            p2.x = R_BOUND
+        if keys[pygame.K_UP]:
+            jumpy=True
+        if p2.y < T_BOUND:
+            p2.y = T_BOUND
+        if keys[pygame.K_DOWN]:
+            p2.y += p2.vel
+        if p2.y > B_BOUND:
+            p2.y = B_BOUND
+        if keys[pygame.K_RCTRL]:
+            pos = (p2.x, p2.y)
+            p2_kill = p2.fire(p1_box, ldir, rdir, pos, p2.special)
+            if p2_kill: p1_dead = True
 
-    if jumpy:
-        p2.y -= p2_y_vel
-        p2_y_vel -= grav
-        if p2_y_vel < -p2.j_height:
-            jumpy=False
-            p2_y_vel = p2.j_height
-    else:
-        p2.y += grav * p2.vel
+        if jumpy:
+            p2.y -= p2_y_vel
+            p2_y_vel -= grav
+            if p2_y_vel < -p2.j_height:
+                jumpy=False
+                p2_y_vel = p2.j_height
+        else:
+            p2.y += grav * p2.vel
 
-    if p1_dead:
+        if p1_dead:
 
-        p2_points += 1
-        p1_dead = False
+            p2_points += 1
+            p1_dead = False
 
-        # Display the winner of the round, and reset the game
-        msg = "Round " + str(Round) + " goes to Player 2!"
-        text(msg, font, (0, 0, 0), 160, 250)
-        time.sleep(3)
-        res = reset(Round)
-        Round = res
+            # Display the winner of the round, and reset the game
+            msg = "Round " + str(Round) + " goes to Player 2!"
+            text(msg, font, (0, 0, 0), 160, 250)
+            time.sleep(3)
+            res = reset(Round)
+            Round = res
 
-    if p2_dead:
+        if p2_dead:
 
-        p1_points += 1
-        p2_dead = False
+            p1_points += 1
+            p2_dead = False
 
-        msg = "Round " + str(Round) + " goes to Player 1!"
-        text(msg, font, (0, 0, 0), 160, 250)
-        time.sleep(3)
-        res = reset(Round)
-        Round = res
+            msg = "Round " + str(Round) + " goes to Player 1!"
+            text(msg, font, (0, 0, 0), 160, 250)
+            time.sleep(3)
+            res = reset(Round)
+            Round = res
 
-    # Checks to ensure that the speed will remain consistent by speeding it up when the game slows down
-    dtr = dt * 1000
-    if dtr > 20 and dtr < 30:
-        p1.vel = 8.5
-        p2.vel = 8.5
-    elif dtr > 30 and dtr < 40:
-        p1.vel = 9.5
-        p2.vel = 9.5
-    elif dtr > 40 and dtr < 50:
-        p1.vel = 10.5
-        p2.vel = 10.5
-    elif dtr > 50:
-        p1.vel = 11.5
-        p2.vel = 11.5
-    else:
-        p1.vel = 7.5
-        p2.vel = 7.5
+        # Checks to ensure that the speed will remain consistent by speeding it up when the game slows down
+        dtr = dt * 1000
+        if dtr > 20 and dtr < 30:
+            p1.vel = 8.5
+            p2.vel = 8.5
+        elif dtr > 30 and dtr < 40:
+            p1.vel = 9.5
+            p2.vel = 9.5
+        elif dtr > 40 and dtr < 50:
+            p1.vel = 10.5
+            p2.vel = 10.5
+        elif dtr > 50:
+            p1.vel = 11.5
+            p2.vel = 11.5
+        else:
+            p1.vel = 7.5
+            p2.vel = 7.5
 
-    win.fill((SKYBLUE))
-    pygame.draw.rect(win, "white", ((125, 125), (80, 40)))
-    pygame.draw.rect(win, "white", ((250, 100), (100, 50)))
-    # Checking if p1 is facing left or right
-    if rdir == "l":
-        win.blit(p1_flip, (p1.x, p1.y))
-        win.blit(p1_gun_flip, (p1.x - 25, p1.y))
-    else:
-        win.blit(p1.texture, (p1.x, p1.y))
-        win.blit(p1_gun, (p1.x + 25, p1.y))
+        win.fill((SKYBLUE))
+        pygame.draw.rect(win, "white", ((125, 125), (80, 40)))
+        pygame.draw.rect(win, "white", ((250, 100), (100, 50)))
+        # Checking if p1 is facing left or right
+        if rdir == "l":
+            win.blit(p1_flip, (p1.x, p1.y))
+            win.blit(p1_gun_flip, (p1.x - 25, p1.y))
+        else:
+            win.blit(p1.texture, (p1.x, p1.y))
+            win.blit(p1_gun, (p1.x + 25, p1.y))
 
-    # Checking if p2 is facing left or right
-    if ldir == "l":
-        win.blit(p2_flip, (p2.x, p2.y))
-        win.blit(p2_gun_flip, (p2.x - 25, p2.y))
-    else:
-        win.blit(p2.texture, (p2.x, p2.y))
-        win.blit(p2_gun, (p2.x + 25, p2.y))
+        # Checking if p2 is facing left or right
+        if ldir == "l":
+            win.blit(p2_flip, (p2.x, p2.y))
+            win.blit(p2_gun_flip, (p2.x - 25, p2.y))
+        else:
+            win.blit(p2.texture, (p2.x, p2.y))
+            win.blit(p2_gun, (p2.x + 25, p2.y))
 
 
-    # Draw all of the tiles to the screen using tile.draw()
-    floor[0].draw(), floor[1].draw(), floor[2].draw(), floor[3].draw(), floor[4].draw(), floor[5].draw(), floor[6].draw(), floor[7].draw()
-    floor[8].draw(), floor[9].draw(), floor[10].draw(), floor[11].draw(), floor[12].draw(), floor[13].draw(), floor[14].draw(), floor[15].draw(), floor[16].draw()
-    floorBox[0].draw(), floorBox[1].draw()
-    skyBox[0].draw(), skyBox[1].draw(), skyBox[2].draw()
+        # Draw all of the tiles to the screen using tile.draw()
+        floor[0].draw(), floor[1].draw(), floor[2].draw(), floor[3].draw(), floor[4].draw(), floor[5].draw(), floor[6].draw(), floor[7].draw()
+        floor[8].draw(), floor[9].draw(), floor[10].draw(), floor[11].draw(), floor[12].draw(), floor[13].draw(), floor[14].draw(), floor[15].draw(), floor[16].draw()
+        floorBox[0].draw(), floorBox[1].draw()
+        skyBox[0].draw(), skyBox[1].draw(), skyBox[2].draw()
 
-    
-    # Code to check for the winner
-    winner = ""
-    if p1_points == 3:
-        winner = "Player One Wins!"
-        text(winner, font, "black", 160, 250)
-        time.sleep(3); pygame.quit()
-    elif p2_points == 3:
-        winner = "Player Two Wins!"
-        text(winner, font, "black", 160, 250)
-        time.sleep(3); pygame.quit()
+        
+        # Code to check for the winner
+        winner = ""
+        if p1_points == 3:
+            winner = "Player One Wins!"
+            text(winner, font, "black", 160, 250)
+            time.sleep(3); pygame.quit()
+        elif p2_points == 3:
+            winner = "Player Two Wins!"
+            text(winner, font, "black", 160, 250)
+            time.sleep(3); pygame.quit()
 
-    pygame.display.update()
-    dt = clock.tick(60) / 1000
+        pygame.display.update()
+        dt = clock.tick(60) / 1000
+
+def mainMenu():
+
+    running = False
+    Clock = pygame.time.Clock()
+    while not running:
+        
+        title = text("PYFIGHT", font, "black")
+        start_prompt = text("HOVER TO START", pygame.font.SysFont("arialblack", 20), "black")
+        check = start_prompt.get_rect()
+        if check.collidepoint(pygame.mouse.get_pos()):
+            running = True
+            break
+
+        win.fill((255, 255, 255))
+        win.blit(title, (160, 250))
+        win.blit(start_prompt, (160, 325))
+        win.blit(fist, (355, 255))
+
+        Clock.tick(60) / 1000
+        pygame.display.update()
+
+    main()
+
+mainMenu()
