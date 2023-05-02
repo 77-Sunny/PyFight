@@ -1,6 +1,4 @@
-# PyFight v_a.05 by Charlie Warren and Marco Perez
-# Sprites and Code by Charlie Warren
-# Menu designs and Code by Marco Perez
+# PyFight v_a.05 by 77-Sunny
 
 # Import all modules and external files to be used
 import pygame
@@ -139,11 +137,9 @@ global running
 running = False
 
 pygame.display.set_icon(pygame.image.load("JIMBOB.ico"))
+menu.menu(win, font, fist)
 
 # Main game loop
-
-#menu.menu(win, font, fist)
-
 running = True
 while running:
 
