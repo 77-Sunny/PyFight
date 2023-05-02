@@ -8,6 +8,11 @@ Title code and Maps by AvocadoSoups
 
 Licensed under GNU General Public License v2.0
 
+REQUIREMENTS:
+
+    - Python 3.10.11
+    - Pygame 2.3.0
+
 CONTROLS:
 
     - Jimbob (Red) is player one, and is controlled with
