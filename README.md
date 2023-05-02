@@ -10,8 +10,8 @@ Licensed under GNU General Public License v2.0
 
 REQUIREMENTS:
 
-    - Python 3.10.11
-    - Pygame 2.3.0
+    - Python 3.10.11 or never
+    - Pygame 2.3.0 or newer
 
 CONTROLS:
 
