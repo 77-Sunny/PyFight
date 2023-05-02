@@ -2,9 +2,8 @@ THIS GAME IS STILL A WORK IN PROGRESS AND IS VERY INCOMPLETE
 
 PYFIGHT
 
-Made by 77-Sunny and AvocadoSoups
-Sprite work and Code by 77-Sunny
-Title code and Maps by AvocadoSoups
+Made by 77-Sunny
+Credit to TunePocket for the sounds
 
 Licensed under GNU General Public License v2.0
 
