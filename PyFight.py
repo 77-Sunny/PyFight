@@ -28,6 +28,9 @@ grass, wood = pygame.image.load("SPRITES\\TILES\\GRASS.png"), pygame.image.load(
 global rdir, ldir
 rdir, ldir = "", ""
 
+global SKYBLUE
+SKYBLUE = (135, 176, 235)
+
 # Generic class for handling players, enemies, projectiles etc
 class thing(object):
     def __init__(self, texture, x, y, j_height, vel, type, special):
@@ -42,8 +45,14 @@ class thing(object):
     def fire(self, wHit, wDir, eDir, pos, special):
         
         if special == 0:
-            if wDir == "l": punch = pygame.draw.rect(win, (135, 206, 235), ((pos[0] - 50, pos[1]), (15, 50)))
-            else: punch = pygame.draw.rect(win, (135, 206, 235), ((pos[0] + 50, pos[1]), (15, 50)))
+             
+            if wDir == "l": 
+                toRect = pygame.Rect((pos[0] - 50, pos[1]), (15, 50))
+                punch = pygame.draw.rect(win, (SKYBLUE), toRect)
+            else: 
+                toRect = pygame.Rect((pos[0] + 50, pos[1]), (15, 50))
+                punch = pygame.draw.rect(win, (SKYBLUE), toRect)
+            
             col = wHit.colliderect(punch)
             self.special = 3.5 * 50
             if col: return True
@@ -91,16 +100,20 @@ jumpy = False
 global Round
 Round = 1
 
+font = pygame.font.SysFont("arialblack", 40)
+def text(txt, font, txt_col, x, y):
+    img = font.render(txt, True, txt_col)
+    def draw():
+        win.blit(img, (x, y))
+
 def reset(rund):
 
     p1.x, p1.y = 100.0, 350.0
     p2.x, p2.y = 250.0, 350.0
     p1.special = 0
     p2.special = 0
-    rund += 1; print(f'Round {rund}')
+    rund += 1; 
     return rund
-
-print(f'Round {Round}')
 
 # Main game loop
 running = True
@@ -113,6 +126,12 @@ while running:
 
     if p1.special > 0: p1.special -= 1
     if p2.special > 0: p2.special -= 1
+
+    p1_p_msg = f'P1 Points: {p1_points}'
+    p2_p_msg = f'P2 Points: {p2_points}'
+
+    text(p1_p_msg, font, (0, 0, 0), 25, 25).draw()
+    text(p2_p_msg, font, (0, 0, 0), 625, 25).draw()
 
     pygame.display.set_caption(f'PyFight v_a.075 | dt = {dt * 1000} | p1p = {p1_points} | p2p = {p2_points}')
     for event in pygame.event.get():
@@ -192,25 +211,24 @@ while running:
         p2.y += grav * p2.vel
 
     if p1_dead:
-        if Round == 2:
-            p2_points = 1
-        elif Round == 3:
-            p2_points = 2
-        elif Round == 4:
-            p2_points = 3
+
+        p2_points += 1
         p1_dead = False
+
+        # Display the winner of the round, and reset the game
+        msg = "Round " + str(Round) + " goes to Player 2!"
+        text(msg, font, (0, 0, 0), 160, 250)
         time.sleep(3)
         res = reset(Round)
         Round = res
+
     if p2_dead:
-        if Round == 2:
-            p1_points = 1
-        elif Round == 3:
-            p1_points = 2
-        elif Round == 4:
-            p1_points = 3
+
         p1_points += 1
         p2_dead = False
+
+        msg = "Round " + str(Round) + " goes to Player 1!"
+        text(msg, font, (0, 0, 0), 160, 250)
         time.sleep(3)
         res = reset(Round)
         Round = res
@@ -233,7 +251,7 @@ while running:
         p1.vel = 7.5
         p2.vel = 7.5
 
-    win.fill((135, 206, 235))
+    win.fill((SKYBLUE))
     pygame.draw.rect(win, "white", ((125, 125), (80, 40)))
     pygame.draw.rect(win, "white", ((250, 100), (100, 50)))
     # Checking if p1 is facing left or right
@@ -252,6 +270,8 @@ while running:
         win.blit(p2.texture, (p2.x, p2.y))
         win.blit(p2_gun, (p2.x + 25, p2.y))
 
+
+    # Draw all of the tiles to the screen using tile.draw()
     floor[0].draw(), floor[1].draw(), floor[2].draw(), floor[3].draw(), floor[4].draw(), floor[5].draw(), floor[6].draw(), floor[7].draw()
     floor[8].draw(), floor[9].draw(), floor[10].draw(), floor[11].draw(), floor[12].draw(), floor[13].draw(), floor[14].draw(), floor[15].draw(), floor[16].draw()
     floorBox[0].draw(), floorBox[1].draw()
@@ -259,12 +279,15 @@ while running:
 
     
     # Code to check for the winner
-    if p1_points - 2 >= p2_points:
+    winner = ""
+    if p1_points == 3:
         winner = "Player One Wins!"
-    elif p2_points - 2 >= p1_points:
+        text(winner, font, "black", 160, 250)
+        time.sleep(3); pygame.quit()
+    elif p2_points == 3:
         winner = "Player Two Wins!"
-    else:
-        print(f'{winner}'); pygame.quit()
+        text(winner, font, "black", 160, 250)
+        time.sleep(3); pygame.quit()
 
     pygame.display.update()
     dt = clock.tick(60) / 1000
