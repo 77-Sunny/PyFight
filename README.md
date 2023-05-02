@@ -3,7 +3,7 @@ THIS GAME IS STILL A WORK IN PROGRESS AND IS VERY INCOMPLETE
 PYFIGHT
 
 Made by 77-Sunny
-Credit to TunePocket for the sounds
+Credit goes to TunePocket for the sounds
 
 Licensed under GNU General Public License v2.0
 
