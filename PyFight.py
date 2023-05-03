@@ -1,6 +1,6 @@
-# PyFight v_a.05 by Charlie Warren and Marco Perez
-# Sprites and Code by Charlie Warren
-# Menu designs and Code by Marco Perez
+# PyFight v_a.05 by 77-Sunny AvocadoSoups
+# Sprites and Code by 77-Sunny
+# Audio by AvocadoSoups
 
 # Import all modules and external files to be used
 import pygame
