@@ -146,7 +146,12 @@ def reset(rund):
     return rund
 
 pygame.display.set_icon(pygame.image.load("JIMBOB.ico"))
-#menu.menu(win, font, fist)
+menu.menu(win, font, fist)
+
+# music
+pygame.mixer.music.load('ohio.wav')
+pygame.mixer.music.play(-1)
+yay_sound = pygame.mixer.Sound("yay_sound.wav")
 
 # Main game loop
 running = True
@@ -334,12 +339,18 @@ while running:
     # Code to check for the winner
     winner = ""
     if p1_points == 3:
+        pygame.mixer.music.stop()
+        pygame.mixer.Sound.play(yay_sound)
+        pygame.mixer.music.stop()
         winner = "Player One Wins!"
         winner = text(winner, font, (0, 0, 0))
         win.blit(winner, (180, 250))
         pygame.display.update()
         time.sleep(3); pygame.quit()
     elif p2_points == 3:
+        pygame.mixer.music.stop()
+        pygame.mixer.Sound.play(yay_sound)
+        pygame.mixer.music.stop()
         winner = "Player Two Wins!"
         winner = text(winner, font, (0, 0, 0))
         win.blit(winner, (180, 250))
