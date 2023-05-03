@@ -121,7 +121,7 @@ def collide(pos1, pos2):
     
     # Player moving right, left side of the tile
     if abs(pos2[0] - (pos1[0] + 50 )) <= col_tol: 
-        return (pos2[1])
+        return (pos2[0])
     
     # Player falling down, top side of the tile
     if abs(pos2[1] - (pos1[1] + 50)) <= col_tol:
