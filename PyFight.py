@@ -1,4 +1,6 @@
-# PyFight v_a.05 by 77-Sunny
+# PyFight v_a.05 by Charlie Warren and Marco Perez
+# Sprites and Code by Charlie Warren
+# Menu designs and Code by Marco Perez
 
 # Import all modules and external files to be used
 import pygame
@@ -70,20 +72,6 @@ class tile(object):
     def draw(self):
         win.blit(self.texture, (self.x, self.y))
 
-def coll(tl, wo):
-
-    col_tol = 10
-    if tl.colliderect(wo):
-        if abs(tl.top - wo.bottom) < col_tol:
-            return True
-        if abs(tl.bottom - wo.top) < col_tol:
-            return True
-        if abs(tl.right - wo.left) < col_tol:
-            return True
-        if abs(tl.left - wo.right) < col_tol:
-            return True
-        else: return False
-
 # Players
 global p1, p2
 p1 = thing(jimbob, 100.0, 350.0, 20.0, 7.5, "player", 0)
@@ -98,7 +86,6 @@ floorBox = [tile(0, 500, wood), tile(750, 500, wood)]
 skyBox = [tile(50, 375, wood), tile(100, 375, wood), tile(150, 375, wood)]
 floorBox_rec = [floorBox[0].texture.get_rect(), floorBox[1].texture.get_rect()]
 skyBox_rec = [skyBox[0].texture.get_rect(), skyBox[1].texture.get_rect(), skyBox[2].texture.get_rect()]
-
 
 # Variables used for scoring and weapon blits
 global p1_points, p2_points, p1_dead, p2_dead
@@ -119,6 +106,29 @@ jumpy = False
 global Round
 Round = 1
 
+def collide(pos1, pos2):
+
+    # pos1 = player
+    # pos2 = tile
+
+    col_tol = 7.5
+
+    # Player moving left, right side of the tile
+    if abs((pos2[0] + 50) - pos1[0]) <= col_tol:
+        return (pos2[0] + 50)
+    
+    # Player moving right, left side of the tile
+    if abs(pos2[0] - (pos1[0] + 50 )) <= col_tol: 
+        return (pos2[1])
+    
+    # Player falling down, top side of the tile
+    if abs(pos2[1] - (pos1[1] + 50)) <= col_tol:
+        return (pos2[1])
+    
+    # Player jumping up, bottom side of the tile
+    if abs((pos2[1] + 50) - pos1[1]) <= col_tol:
+        return (pos2[1] + 50)
+
 font = pygame.font.SysFont("arialblack", 40)
 def text(txt, font, txt_col):
     img = font.render(txt, True, txt_col)
@@ -133,11 +143,8 @@ def reset(rund):
     rund += 1; 
     return rund
 
-global running
-running = False
-
 pygame.display.set_icon(pygame.image.load("JIMBOB.ico"))
-menu.menu(win, font, fist)
+#menu.menu(win, font, fist)
 
 # Main game loop
 running = True
@@ -151,7 +158,7 @@ while running:
     if p1.special > 0: p1.special -= 1
     if p2.special > 0: p2.special -= 1
 
-    pygame.display.set_caption(f'PyFight | dt = {dt * 1000} | p1p = {p1_points} | p2p = {p2_points}')
+    pygame.display.set_caption(f'PyFight | dt = {dt * 1000}')
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -167,24 +174,36 @@ while running:
         p1_flip = pygame.transform.flip(p1.texture, flip_x=True, flip_y=False)   
         p1.x -= p1.vel
     
-    # Left Collision
-    l_pos_col = [floorBox_rec[0], skyBox_rec[2]]
-    for e in l_pos_col:
-        col = coll(e, p1_box)
-        if col: p1.vel = 0
-        else: p1.vel = p1.vel
+    # Right side collision
+    r_pos_col = [floorBox_rec[0], skyBox_rec[2]]
+    for e in r_pos_col:
+        col = collide((p1.x, p1.y), (e.x, e.y))
+        if col and rdir == "l" and not(p1.y < floorBox[0].y + 2.5): # For some reason the players y when on the floor is + 2.5 more than it should be
+            p1.x = col
+        print(col, floorBox[0].y, p1.y)
+    if p1.x < L_BOUND:
+        p1.x = L_BOUND
 
     if keys[pygame.K_d]:
         rdir="r"
         p1.x += p1.vel
+    
+    l_pos_col = [floorBox_rec[1], skyBox_rec[1]]
+    for e in l_pos_col:
+        col = collide((), ()):
+        if col and ldir == "r" and not(p1.y )
     if p1.x > R_BOUND:
         p1.x = R_BOUND
+
     if keys[pygame.K_w]:
         jump = True
+
     if keys[pygame.K_s]:
         p1.y += p1.vel
+
     if p1.y > B_BOUND:
         p1.y = B_BOUND
+
     if keys[pygame.K_q]:
         pos = (p1.x, p1.y)
         p1_kill = p1.fire(p2_box, rdir, ldir, pos, p1.special)
@@ -197,7 +216,7 @@ while running:
         if p1_y_vel < -p1.j_height:
             jump=False
             p1_y_vel = p1.j_height
-    else:
+    else: 
         p1.y += grav * p1.vel
 
     # Player 2 movement and collision
@@ -205,6 +224,12 @@ while running:
         ldir="l"
         p2_flip = pygame.transform.flip(p2.texture, flip_x=True, flip_y=False)
         p2.x -= p2.vel
+
+    for e in r_pos_col:
+        col = collide((p2.x, p2.y), (e.x, e.y))
+        if col and ldir == "l" and not(p2.y < floorBox[0].y + 2.5): # For some reason the players y when on the floor is + 2.5 more than it should be
+            p2.x = col
+        print(col, floorBox[0].y, p2.y)
     if p2.x < L_BOUND:
         p2.x = L_BOUND
     if keys[pygame.K_RIGHT]:
