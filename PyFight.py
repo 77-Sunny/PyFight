@@ -1,5 +1,5 @@
 # PyFight v_a.05 by 77-Sunny and AvocadoSoups
-# Sprites and Code by 77-Sunnt
+# Sprites and Code by 77-Sunny
 # Audio by AvodacoSoups
 
 # Import all modules and external files to be used
