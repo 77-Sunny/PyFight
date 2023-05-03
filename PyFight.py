@@ -1,6 +1,6 @@
-# PyFight v_a.05 by 77-Sunny and AvocadoSoups
-# Sprites and Code by 77-Sunny
-# Audio by AvodacoSoups
+# PyFight v_a.05 by Charlie Warren and Marco Perez
+# Sprites and Code by Charlie Warren
+# Menu designs and Code by Marco Perez
 
 # Import all modules and external files to be used
 import pygame
@@ -12,8 +12,8 @@ import menu
 
 # Initialize pygame
 pygame.init()
-#pygame.mixer.music.load('20190724.wav')
-#pygame.mixer.music.play(-1)
+# pygame.mixer.music.load("AUDIO\\20190724.wav")
+# pygame.mixer.music.play(-1)
 WIN_WID = 800
 WIN_HEI = 600
 
@@ -66,13 +66,17 @@ class thing(object):
         else: return False
 
 # Generic class for handling tiles
-class tile(object):
-    def __init__(self, x, y, texture):
+class tile(pygame.Rect):
+    def __init__(self, x, y, wid, hei, texture):
         self.x = x
         self.y = y
+        self.wid = wid
+        self.hei = hei
         self.texture = texture
+
     def draw(self):
-        win.blit(self.texture, (self.x, self.y))
+        pygame.draw.rect(win, (0, 0, 0), ((self.x, self.y), (self.wid, self.hei)))
+        pygame.Surface.blit((self.x, self.y), self.texture)
 
 # Players
 global p1, p2
@@ -83,11 +87,10 @@ p2 = thing(billy, 600.0, 350.0, 20.0, 7.5, "player", 0)
 p1_box, p2_box = p1.texture.get_rect(), p2.texture.get_rect()
 
 # Tiles that make up the map
-floor = [tile(0, 550, grass), tile(50, 550, grass), tile(100, 550, grass), tile(150, 550, grass), tile(200, 550, grass), tile(250, 550, grass), tile(300, 550, grass), tile(350, 550, grass), tile(400, 550, grass), tile(450, 550, grass), tile(450, 550, grass), tile(500, 550, grass), tile(550, 550, grass), tile(600, 550, grass), tile(650, 550, grass), tile(700, 550, grass), tile(750, 550, grass)]
-floorBox = [tile(0, 500, wood), tile(750, 500, wood)]
-skyBox = [tile(50, 375, wood), tile(100, 375, wood), tile(150, 375, wood)]
-floorBox_rec = [floorBox[0].texture.get_rect(), floorBox[1].texture.get_rect()]
-skyBox_rec = [skyBox[0].texture.get_rect(), skyBox[1].texture.get_rect(), skyBox[2].texture.get_rect()]
+floor = [tile(0, 550, 50, 50, grass), tile(50, 550, 50, 50, grass), tile(100, 550, 50, 50, grass), tile(150, 550, 50, 50, grass), tile(200, 550, 50, 50, grass), tile(250, 550, 50, 50, grass), tile(300, 550, 50, 50, grass), tile(350, 550, 50, 50, grass), tile(400, 550, 50, 50, grass), tile(450, 550, 50, 50, grass), tile(450, 550, 50, 50, grass), tile(500, 550, 50, 50, grass), tile(550, 550, 50, 50, grass), tile(600, 550, 50, 50, grass), tile(650, 550, 50, 50, grass), tile(700, 550, 50, 50, grass), tile(750, 550, 50, 50, grass)]
+floorBox = [tile(0, 500, 50, 50, wood), tile(750, 500, 50, 50, wood)]
+skyBox = [tile(50, 375, 50, 50, wood), tile(100, 375, 50, 50, wood), tile(150, 375, 50, 50, wood)]
+
 
 # Variables used for scoring and weapon blits
 global p1_points, p2_points, p1_dead, p2_dead
@@ -120,7 +123,7 @@ def collide(pos1, pos2):
         return (pos2[0] + 50)
     
     # Player moving right, left side of the tile
-    if abs(pos2[0] - (pos1[0] + 50 )) <= col_tol: 
+    if abs(pos2[0] - (pos1[0] + 50)) <= col_tol:
         return (pos2[0])
     
     # Player falling down, top side of the tile
@@ -129,7 +132,7 @@ def collide(pos1, pos2):
     
     # Player jumping up, bottom side of the tile
     if abs((pos2[1] + 50) - pos1[1]) <= col_tol:
-        return (pos2[1] + 50)
+        return False
 
 font = pygame.font.SysFont("arialblack", 40)
 def text(txt, font, txt_col):
@@ -146,12 +149,7 @@ def reset(rund):
     return rund
 
 pygame.display.set_icon(pygame.image.load("JIMBOB.ico"))
-menu.menu(win, font, fist)
-
-# music
-pygame.mixer.music.load('ohio.wav')
-pygame.mixer.music.play(-1)
-yay_sound = pygame.mixer.Sound("yay_sound.wav")
+#menu.menu(win, font, fist)
 
 # Main game loop
 running = True
@@ -175,35 +173,43 @@ while running:
     if keys[pygame.K_ESCAPE]:
         pygame.quit()
 
-    # Player 1 movement and collision
     if keys[pygame.K_a]: 
+    # Left Movement.0
         rdir="l"
         p1_flip = pygame.transform.flip(p1.texture, flip_x=True, flip_y=False)   
         p1.x -= p1.vel
     
-    # Right side collision
+    # Collision for the right sides of tiles
     r_pos_col = [floorBox_rec[0], skyBox_rec[2]]
     for e in r_pos_col:
         col = collide((p1.x, p1.y), (e.x, e.y))
         if col and rdir == "l" and not(p1.y < floorBox[0].y + 2.5): # For some reason the players y when on the floor is + 2.5 more than it should be
             p1.x = col
-        print(col, floorBox[0].y, p1.y)
     if p1.x < L_BOUND:
         p1.x = L_BOUND
 
+    # Right Movement
     if keys[pygame.K_d]:
         rdir="r"
         p1.x += p1.vel
     
-    l_pos_col = [floorBox_rec[1], skyBox_rec[1]]
+    # Collision for the left sides of tiles
+    l_pos_col = [floorBox_rec[1], skyBox_rec[0]]
     for e in l_pos_col:
-        col = collide((), ()):
-        if col and ldir == "r" and not(p1.y )
+        col = collide((p1.x, p1.y), (e.x, e.y))
+        if col and rdir == "r" and not(p1.y < floorBox[1].y + 2.5):
+            p1.x = col
+    # print(col, p1.y, floorBox[1].y)
     if p1.x > R_BOUND:
         p1.x = R_BOUND
 
     if keys[pygame.K_w]:
         jump = True
+
+    for e in skyBox_rec:
+        col = collide((p1.x, p1.y), (e.x, e.y))
+        if col and not(p1.y > (skyBox[0].y + 50)):
+            jump = False
 
     if keys[pygame.K_s]:
         p1.y += p1.vel
@@ -232,13 +238,14 @@ while running:
         p2_flip = pygame.transform.flip(p2.texture, flip_x=True, flip_y=False)
         p2.x -= p2.vel
 
+    # Right side collision
     for e in r_pos_col:
         col = collide((p2.x, p2.y), (e.x, e.y))
         if col and ldir == "l" and not(p2.y < floorBox[0].y + 2.5): # For some reason the players y when on the floor is + 2.5 more than it should be
             p2.x = col
-        print(col, floorBox[0].y, p2.y)
     if p2.x < L_BOUND:
         p2.x = L_BOUND
+
     if keys[pygame.K_RIGHT]:
         ldir="r"
         p2.x += p2.vel
@@ -339,18 +346,12 @@ while running:
     # Code to check for the winner
     winner = ""
     if p1_points == 3:
-        pygame.mixer.music.stop()
-        pygame.mixer.Sound.play(yay_sound)
-        pygame.mixer.music.stop()
         winner = "Player One Wins!"
         winner = text(winner, font, (0, 0, 0))
         win.blit(winner, (180, 250))
         pygame.display.update()
         time.sleep(3); pygame.quit()
     elif p2_points == 3:
-        pygame.mixer.music.stop()
-        pygame.mixer.Sound.play(yay_sound)
-        pygame.mixer.music.stop()
         winner = "Player Two Wins!"
         winner = text(winner, font, (0, 0, 0))
         win.blit(winner, (180, 250))
