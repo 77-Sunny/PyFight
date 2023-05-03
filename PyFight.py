@@ -12,6 +12,8 @@ import menu
 
 # Initialize pygame
 pygame.init()
+pygame.mixer.music.load('20190724.wav')
+pygame.mixer.music.play(-1)
 WIN_WID = 800
 WIN_HEI = 600
 
