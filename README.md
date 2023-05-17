@@ -1,4 +1,6 @@
 THIS GAME IS STILL A WORK IN PROGRESS AND IS VERY INCOMPLETE
+IT ALSO IS A CONFUSING READ, NO DOUBT DUE TO THE SPAGHETTI-LIKE
+NATURE OF THE CODE
 
 PYFIGHT
 
@@ -38,19 +40,6 @@ CONTROLS:
 
 GAMEPLAY:
 
-    - Your objective is to punch your opponent first
-    - You have a cooldown between each punch
-    - You can jump and stand on all the blocks
+    - Your objective is to punch your opponent first, but you have to get close because you can't punch that far.
+    - You have a cooldown between each punch. You'll shirt will turn white when you can't punch.
     - First to 3 wins
-
-CUSTOM MAPS:
-
-	- You can make custom maps by creating a file using the format shown in E_MAP.dat
-	- Maps are 800 x 600 with (0, 0) being in the top-left corner
-	- Each block (and sprite in general) is 50 x 50
-	- Available blocks are,
-		
-		- grass
-		- wood
-		- brick
-   
