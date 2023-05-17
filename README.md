@@ -42,4 +42,4 @@ GAMEPLAY:
 
     - Your objective is to punch your opponent first, but you have to get close because you can't punch that far.
     - You have a cooldown between each punch. You'll shirt will turn white when you can't punch.
-    - First to 3 wins
+    - First to 3 points wins
